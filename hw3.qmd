@@ -1,0 +1,17 @@
+---
+title: "hw3"
+author: "Natalie Smith"
+format: 
+  html:
+    code-fold: true
+    toc: true
+    number-sections: true
+    embed-resources: true
+theme: Litera
+editor: visual
+execute:
+  echo: true
+  message: false
+  warning: false
+---
+
