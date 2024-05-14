@@ -156,7 +156,7 @@ qstar <- agg_demand(50000)
 difference between the maximum price consumers are willing to pay ($50,000) and the actual price they pay.
 
 ```{r}
-### find consumer surpls
+### find consumer surplus
 
 cs_fun <- function(a, Q) {
   P = 1/2*(a - 50000)*Q
@@ -226,10 +226,8 @@ ggplot(data = data_pivot, aes(x = quantity, y = price_dollars, color = group)) +
 ## 4. How is the current consumer benefit divided between DAC and non-DAC consumers?
 
 ```{r}
-cs_dac <- 1/2*(116854.84 - 50000)*dac_demand_q(50000)
-###cs_dac = $338,091,500
-cs_non_dac <- 1/2*(158034.28 - 50000)*nondac_demand_q (50000)
-#cs_non_dac -- $2,137,620,083
+### DAC CS: 338,091,500
+### Non-DAC CS: 2,137,620,083
 
 cb_dac <- cs_dac/cs
 cb_non_dac <- cs_non_dac/cs
@@ -243,78 +241,117 @@ Non-DAC: $86.33%$
 ### 5. 
 Derive the optimal EV tax (in \$ per vehicle) to internalize the lithium mining externality. Noting that recent research has shown that DACs are far more likely to contain mining activity, assume that the mining externality is borne entirely by the DAC group. What would be the effects of this tax on:
 
-
-###a\. The amount of EVs produced and consumed
+###a. The amount of EVs produced and consumed
 
 Because MEC is constant, optimal tax = $18,900/EV$
 
 ```{r}
-agg_demand(50000)
-# 49678.19
+msc <- function(Q) {
+  P = MEC + 1.006296*Q
+  return(P)
+}
 
-agg_demand(68900)
-# 39904.81
+msc_q <- function(P) {
+  Q = (P - MEC)/1.006296
+  return(Q)
+}
 
-agg_demand(50000) - agg_demand(68900)
-# 9782.381
+agg_demand_p <- function(Q){
+  P <- -1.96*Q + 148169
+  return(P)
+}
+
+F3 <- function(Q){
+  z <- agg_demand_p(Q) - msc(Q)
+  return(z)
+}
+
+fzero(F3, c(0,80000))$x
+
+qstar_soc <- 43579.27
+
+#plug in p-star to find the price
+p_star_soc <- msc(qstar_soc)
+p_star_soc <- 62430.86
+
 ```
 
-The amount of EVs produced and consumed would decrease by ~ $9,782 units$.
+The amount of EVs produced and consuned would decrease from 50,000 to 43,892.08 units. 
 
-###b\. The price of EVs
+###b. The price of EVs
 
-The price of each EV would increase by $18,900 from 50,000 to 68,900$
+The price of each EV would increase from 50,000 to 62,430.86
 
-###c\. Overall welfare of non-DAC consumers
-
+###c. Overall welfare of non-DAC consumers
 
 ```{r}
-cs_non_dac_welfare <- 1/2*(158034.28 - 68900)*nondac_demand_q (68900)
-### 1,455,113,530
+cs_non_dac_welfare <- 1/2*(158034.28 - p_star_soc)*nondac_demand_q(p_star_soc)
+###  1,673,995,223
+# cs_non_dac_welfare
 ```
-#REWRITE:Benefit to non-DAC Consumers w/tax = 1,454,620,139 <br> This is a decrease of 682506553 from a non taxed CS of 2,137,620,083
+#REWRITE w updated numbers :Benefit to non-DAC Consumers w/tax = 1,454,620,139 <br> This is a decrease of 682506553 from a non taxed CS of 2,137,620,083
 
-###d\. Overall welfare of DAC consumers
+###d. Overall welfare of DAC consumers
 
 ```{r}
-cs_dac_welfare <- 1/2*(116854.84 - 68900)*dac_demand_q(68900)
-###173,953,607
-
+cs_dac_welfare <- 1/2*(116854.84 - p_star_soc)*dac_demand_q(p_star_soc)
+### 224,052,163
+cs_dac_welfare 
 ```
 
-#REWRITE THIS: Benefit to DAC Consumers w/tax = 173,953,607. This is a decrease of 164,137,893 from the non taxed CS of 338,091,500. The overall welfare for DAC will be their benefit after the tax is implemented 
+#REWRITE THIS with updated numbers: Benefit to DAC Consumers w/tax = 173,953,607. This is a decrease of 164,137,893 from the non taxed CS of 338,091,500. The overall welfare for DAC will be their benefit after the tax is implemented 
 
-# 49678.19
-###e\. EV producers
+###e. EV producers
 ```{r}
-#ps = 1,241,954,750
+# original ps = 1,241,954,750
 
-ps_tax <- 1/2*68900*39904.81
-# 1,374,720,704
+ps_tax <- 1/2 * (qstar_soc) * (p_star_soc-18900)
+# 941,539,757
 
-### ps - ps_tax = 132765954
+# ps_tax
+
 ```
 
-EV producers would experience a change in $132,765,954 in producer surplus.
+EV producers would experience a decrease in producer surplus from 1,242,179,825 to 941,539,757.
 
 
-###f\. Total environmental damage
+###f. Total environmental damage
 
 ```{r}
 ### Environmental cost = MEC ($18,900) * Qagg(50,000)
-env_cost_tax <- 18900 * 39904.81
-# = 754200909
+env_cost_tax <- 18900 * qstar_soc
+# env_cost_tax
+# = 817,585,650
 
 #enviro cost (no tax) = 939087948
 
-# 939087948 - 754200909 = 184,887,039
+envirodamage <- ec - env_cost_tax 
+envirodamage
 
 ```
 
-Total environmental damage would decrease by 184,887,039 - from 939,087,948 to 754,200,909
+Total environmental damage would decrease by 184,887,039, from 939,087,948 to 754,200,909
 
-###g\. Total tax revenue generated
+###g. Total tax revenue generated
 
-184,887,039
+The same as the total environmental damage, $817,585,650.
+
+## 6.
+Now, assume that all revenue from the EV tax will be redistributed to the consumers in proportion to their pre-tax consumption of EVs. For example, if 80% of the EVs were consumed by non-DAC consumers, then they get 80% of the tax revenue. Calculate the effects of this EV tax on:
+### a.Overall welfare of non-DAC consumers
+```{r}
+
+```
+
+### b.Overall welfare of DAC consumers
+### c.EV producers
+
+## 7.
+ Based on your findings, use 1-3 sentences to answer the following (qualitatively only):
+
+### a.
+Are non-DAC consumers likely to support the EV tax? How would the redistribution regime in question #6 affect their support for the tax?
 
 
+### b.
+Are DAC consumers likely to support the EV tax? How would the redistribution regime in question #6 affect their support for the tax?
