@@ -1,7 +1,20 @@
 ---
-title: "TBD"
-format: html
+title: "Distributional Consequences of the Clean Energy Transition"
+subtitle: "Econ 204: Assignment 3"
+author: Natalie Smith
+Date: 5/15/24
+format: 
+  html:
+    code-fold: true
+    toc: true
+    number-sections: true
+    embed-resources: true
+theme: Litera
 editor: visual
+execute:
+  echo: true
+  message: false
+  warning: false
 ---
 
 ```{r}
@@ -13,7 +26,7 @@ library(car)
 library(pracma)
 ```
 
-## 1.
+## 1. Linear Regressions and Visualization:
 
 The data set HW3 data.csv provides price (in \$) and quantity (in number of EVs) estimates of demand per year for both DAC and non-DAC groups. Run linear regressions (with an intercept) to estimate the demand curves for DAC and non-DAC consumers. What are 2-3 reasons you can think that may explain the differences in demand you estimate?
 
@@ -75,11 +88,12 @@ One kilogram (kg) of lithium is estimated to cause \$300 dollars worth of damage
 MEC <- 300 * 63
 ```
 
-The marginal externality cost per EV produced is \$18,900.
+The marginal externality cost per EV produced is **\$18,900**.
 
 ## 3. Describe the current equilibrium:
 
-### a. What is the aggregate annual demand curve for EVs?
+### a. 
+What is the aggregate annual demand curve for EVs?
 ```{r}
 ### Write demand functions
 
@@ -127,7 +141,8 @@ agg_demand <- function(P) {
 
 **Aggregate demand** $Q = -1.96Q + 148169$
 
-###b. What is the supply curve for EVs?
+### b. 
+What is the supply curve for EVs?
 
 EVs are currently at a price of \$50,000. We can plug this into our aggregate demand equation to find Q: 
 
@@ -143,7 +158,7 @@ supply <- function(Q) {
   return(P)
 }
 ```
-The supply curve for EVs is: $P = 1.006296Q$
+**The supply curve for EVs is: P = 1.006296Q**
 
 ```{r}
 # ### P* and Q*
@@ -151,8 +166,8 @@ pstar <- 50000
 qstar <- agg_demand(50000)
 ```
 
-
-###c. What is the “benefit” to consumers under the status quo?
+### c.
+What is the “benefit” to consumers under the status quo?
 difference between the maximum price consumers are willing to pay ($50,000) and the actual price they pay.
 
 ```{r}
@@ -173,9 +188,9 @@ cs <- cs_fun(116854.84, dac_demand_q(50000)) + cs_fun(158034.28, nondac_demand_q
 
 ```
 
-**Consumer Surplus:** $2,475,711,583$ 
+**Total Consumer Surplus: 2,475,711,583**
 
-###d. 
+### d. 
 What is the “benefit” to producers under the status quo?
 
 ```{r}
@@ -189,9 +204,9 @@ ps_fun <- function(Q) {
 ps_fun(agg_demand(50000)) 
 ### 1,242,179,825
 ```
-**Producer Surplus:** $1,242,179,825$
+**Producer Surplus: 1,242,179,825**
 
-###e. 
+### e. 
 What is the environmental cost under the status quo?
 
 ```{r}
@@ -200,26 +215,26 @@ ec <- qstar*MEC
 # EC ### 939087948
 ```
 
-**Environmental Cost:** $939,087,948$
+**Environmental Cost: 939,087,948**
 
 ```{r}
-library(ggplot2)
-
-ggplot(data = data_pivot, aes(x = quantity, y = price_dollars, color = group)) + 
-  geom_point() + 
-    labs(title = "DAC and Non-DAC Supply & Demand Curves",
-       x = "Quantity",
-       y = "Price") +
-  stat_function(fun = function(Q) dac_demand(Q), color = "dodgerblue") +
-  stat_function(fun = function(Q) nondac_demand(Q), color = "orangered1") + 
-  stat_function(fun = function(Q) supply(Q), color = "darkgreen") +
-  geom_hline(yintercept = 18900, color = "orange") +
-  scale_color_manual(name = "Group",
-                     values = c("dodgerblue", "orangered1"), 
-                     labels = c("DAC", "Non-DAC")) +
-  ylim(0, 190000) +
-  xlim(0, 90000) +
-  theme_minimal()
+# library(ggplot2)
+# 
+# ggplot(data = data_pivot, aes(x = quantity, y = price_dollars, color = group)) + 
+#   geom_point() + 
+#     labs(title = "DAC and Non-DAC Supply & Demand Curves",
+#        x = "Quantity",
+#        y = "Price") +
+#   stat_function(fun = function(Q) dac_demand(Q), color = "dodgerblue") +
+#   stat_function(fun = function(Q) nondac_demand(Q), color = "orangered1") + 
+#   stat_function(fun = function(Q) supply(Q), color = "darkgreen") +
+#   geom_hline(yintercept = 18900, color = "orange") +
+#   scale_color_manual(name = "Group",
+#                      values = c("dodgerblue", "orangered1"), 
+#                      labels = c("DAC", "Non-DAC")) +
+#   ylim(0, 190000) +
+#   xlim(0, 90000) +
+#   theme_minimal()
 
 ```
 
@@ -229,21 +244,22 @@ ggplot(data = data_pivot, aes(x = quantity, y = price_dollars, color = group)) +
 ### DAC CS: 338,091,500
 ### Non-DAC CS: 2,137,620,083
 
-cb_dac <- cs_dac/cs
-cb_non_dac <- cs_non_dac/cs
+cb_dac <- dac_cs/cs
+cb_non_dac <- nondac_cs/cs
 
 ```
 
-Current consumer benefit divided between DAC and non-DAC consumers:
-DAC: $13.67%$
-Non-DAC: $86.33%$
+Current consumer benefit divided between DAC and non-DAC consumers: <br>
+**DAC: 13.67%** <br>
+**Non-DAC: 86.33%**
 
-### 5. 
+## 5. Optimal EV Tax:
 Derive the optimal EV tax (in \$ per vehicle) to internalize the lithium mining externality. Noting that recent research has shown that DACs are far more likely to contain mining activity, assume that the mining externality is borne entirely by the DAC group. What would be the effects of this tax on:
 
-###a. The amount of EVs produced and consumed
+### a. 
+The amount of EVs produced and consumed:
 
-Because MEC is constant, optimal tax = $18,900/EV$
+**Because MEC is constant, optimal tax = 18,900/EV**
 
 ```{r}
 msc <- function(Q) {
@@ -276,22 +292,25 @@ p_star_soc <- 62430.86
 
 ```
 
-The amount of EVs produced and consuned would decrease from 50,000 to 43,892.08 units. 
+**The amount of EVs produced and consumed would decrease from 50,000 to 43,892.08 units.**
 
-###b. The price of EVs
+### b. 
+The price of EVs:
 
-The price of each EV would increase from 50,000 to 62,430.86
+**The price of each EV would increase from 50,000 to 62,430.86**
 
-###c. Overall welfare of non-DAC consumers
+### c. 
+Overall welfare of non-DAC consumers:
 
 ```{r}
 cs_non_dac_welfare <- 1/2*(158034.28 - p_star_soc)*nondac_demand_q(p_star_soc)
 ###  1,673,995,223
 # cs_non_dac_welfare
 ```
-#REWRITE w updated numbers :Benefit to non-DAC Consumers w/tax = 1,454,620,139 <br> This is a decrease of 682506553 from a non taxed CS of 2,137,620,083
+**The benefit to non-DAC consumers w/tax =  1,673,995,223.**
 
-###d. Overall welfare of DAC consumers
+### d. 
+Overall welfare of DAC consumers:
 
 ```{r}
 cs_dac_welfare <- 1/2*(116854.84 - p_star_soc)*dac_demand_q(p_star_soc)
@@ -299,9 +318,10 @@ cs_dac_welfare <- 1/2*(116854.84 - p_star_soc)*dac_demand_q(p_star_soc)
 cs_dac_welfare 
 ```
 
-#REWRITE THIS with updated numbers: Benefit to DAC Consumers w/tax = 173,953,607. This is a decrease of 164,137,893 from the non taxed CS of 338,091,500. The overall welfare for DAC will be their benefit after the tax is implemented 
+**The benefit to DAC consumers w/tax = 224,052,163.**
 
-###e. EV producers
+### e. 
+EV producers:
 ```{r}
 # original ps = 1,241,954,750
 
@@ -312,10 +332,11 @@ ps_tax <- 1/2 * (qstar_soc) * (p_star_soc-18900)
 
 ```
 
-EV producers would experience a decrease in producer surplus from 1,242,179,825 to 941,539,757.
+**EV producers would experience a decrease in producer surplus from 1,242,179,825 to 941,539,757.**
 
 
-###f. Total environmental damage
+### f. 
+Total environmental damage:
 
 ```{r}
 ### Environmental cost = MEC ($18,900) * Qagg(50,000)
@@ -330,28 +351,66 @@ envirodamage
 
 ```
 
-Total environmental damage would decrease by 184,887,039, from 939,087,948 to 754,200,909
+**Total environmental damage would decrease by 184,887,039,from 939,087,948 to 754,200,909**
 
-###g. Total tax revenue generated
+### g. 
+Total tax revenue generated:
 
-The same as the total environmental damage, $817,585,650.
-
-## 6.
-Now, assume that all revenue from the EV tax will be redistributed to the consumers in proportion to their pre-tax consumption of EVs. For example, if 80% of the EVs were consumed by non-DAC consumers, then they get 80% of the tax revenue. Calculate the effects of this EV tax on:
-### a.Overall welfare of non-DAC consumers
+**Total tax revenue generated is the same as the total environmental damage, $817,585,650.**
 ```{r}
-
+tax_revenue <- 817585650
 ```
 
-### b.Overall welfare of DAC consumers
-### c.EV producers
 
-## 7.
- Based on your findings, use 1-3 sentences to answer the following (qualitatively only):
+## 6. Redistributive Effects of the EV Tax:
+Now, assume that all revenue from the EV tax will be redistributed to the consumers in proportion to their pre-tax consumption of EVs. For example, if 80% of the EVs were consumed by non-DAC consumers, then they get 80% of the tax revenue. Calculate the effects of this EV tax on:
+
+If pre-tax is 50,000, then:
+```{r}
+nondac_demand_q(50000)
+# 39573
+
+dac_demand_q(50000)
+#10114.2
+
+```
+Non-DAC communities consume 39,573 units, while DAC communities consume 10,114 units. Therefore, **non-DAC** consumers would receive approximately **79%** of the tax revenue, while **DAC** consumers would receive around **21%**. 
+
+### a. 
+Overall welfare of non-DAC consumers:
+
+```{r}
+#NONDAC
+cs_non_dac_welfare + tax_revenue * 0.79
+#2,319,887,886
+
+```
+**Overall welfare of non-DAC consumers is 2,319,887,886**
+
+### b. 
+Overall welfare of DAC consumers:
+```{r}
+#DAC
+cs_dac_welfare + tax_revenue * 0.21
+#395745150
+```
+**Overall welfare of DAC consumers is 395,745,150**
+
+### c. 
+EV producers:<br>
+**The EV tax for producers would be unchanged: 941,539,757.**
+
+## 7. Qualitative Analysis:
+Based on your findings, use 1-3 sentences to answer the following (qualitatively only):
 
 ### a.
 Are non-DAC consumers likely to support the EV tax? How would the redistribution regime in question #6 affect their support for the tax?
 
+**Non-DAC consumers are unlikely to support the original EV tax since they would bear more of the tax burden. However, with the redistribution regime they would be more likely to support it, especially since they have the higher demand for EVs and do not suffer any damage from the mining externality.** 
 
 ### b.
 Are DAC consumers likely to support the EV tax? How would the redistribution regime in question #6 affect their support for the tax?
+
+**DAC consumers are less likely to support the EV tax since they are the ones bearing the environmental cost of lithium mining, dispite having lower demand for EVs. Still, If given the option for no tax, or the tax with redistribution, they would likely support the tax with redistribution as they would receive a portion of the tax revenue.**
+
+
